@@ -1,102 +1,258 @@
-# ChronoLens
+# ChronoLens 🔭
 
-ChronoLens is a hackathon MVP for a **Cultural Learning + Research OS**.
+### Cultural Learning + Research OS
 
-Core line: **Ask about culture. Explore the evidence. Turn it into study modules.**
+**One query. Ten research tools. Every claim labelled honestly.**
 
-ChronoLens helps students, teachers, researchers, and cultural heritage groups study culture across artifacts, art, music, performance, history, manuscripts, architecture, textiles, oral traditions, and cultural patterns.
+Built solo at the [OpenAI Codex Hackathon — Sydney](https://lu.ma/openai-codex-hackathon-sydney) · April 29, 2026 · UTS Startups, Ultimo
 
-It is not an AI art generator, AI music generator, or generic chatbot. It studies, preserves, compares, explains, and teaches culture.
+🌐 **Live Demo:** [chrono-lens-six.vercel.app](https://chrono-lens-six.vercel.app)
+📹 **Demo Video:** [[YouTube Link](https://youtu.be/pUtMBqYyRVI)]
+🧑‍💻 **Built by:** [Rishi Kanajam](https://github.com/RishiKanajam)
 
-## Topic-First Flow
+-----
 
-Users can start with a question, not an upload:
+## The Problem
 
-- Study a cultural topic
-- Build a teacher lesson
-- Research an object or source
-- Search archives
-- Open a saved workspace
+AI tools generate cultural content freely — but they don’t tell you what’s a verified fact, what’s an interpretation, and what’s a guess. Students cite AI hallucinations as research. Teachers can’t trust generated lesson content. Researchers lose hours verifying AI claims.
 
-Uploads are optional. Deterministic demo data keeps every flow working without API keys.
+Cultural knowledge deserves better than “sounds about right.”
 
-## Main Features
+## What ChronoLens Does
 
-- Split-screen workspace with conversational left panel and tabbed right workspace
-- Atlas, Sources, Evidence, Connections, Timeline, Image Lab, Study, Teach, Discoveries, and Export tabs
-- Evidence cards with claim classification, source links, confidence, uncertainty, and review flags
-- Pattern Bridge graph for cultural connections
-- Image Lab with deterministic generated images and visual region boxes
-- Student study module with quiz reveal and read aloud
-- Teacher lesson builder with regenerate, copy, PDF, and PPT export
-- Latest discoveries / research watch using fallback data
-- Client-side PDF export with jsPDF
-- PPTX download flow for lesson/demo presentation material
-- Optional OpenAI enrichment when `OPENAI_API_KEY` is present
+Type any cultural question. ChronoLens builds a complete research workspace where **every claim is classified:**
+
+|Classification           |Meaning                                                 |
+|-------------------------|--------------------------------------------------------|
+|✅ **Fact**               |Documented and source-verified                          |
+|📎 **Context**            |Background information, generally accepted              |
+|🔗 **Possible Connection**|Interesting link, not fully proven                      |
+|💡 **Hypothesis**         |Interpretive claim, needs more evidence                 |
+|⚠️ **Needs Review**       |Culturally sensitive or uncertain, requires expert input|
+
+No AI hallucination disguised as truth. Every claim linked to its sources. Every uncertainty made visible.
+
+## Features
+
+### 🔬 Research Workspace
+
+Ten analysis tabs from a single query:
+
+- **Atlas** — High-level cultural context, key questions, art forms involved
+- **Sources** — Real records from Met Museum, Library of Congress, OpenAlex, MusicBrainz
+- **Evidence** — Every claim classified as fact, hypothesis, or needs review
+- **Connections** — Knowledge graph showing cultural relationships with confidence scores
+- **Timeline** — Chronological events with source links
+- **Geography** — Cultural spread mapped across civilizations with transmission flows
+- **Image Lab** — Visual analysis with bounding boxes, enhanced view, and interactive region selection
+- **Infographics** — Auto-generated visual cards for presentations and classrooms
+- **Study** — Complete student learning module with quizzes
+- **Teach** — Ready-made lesson packs with rubrics and activities
+
+### 📚 Study Mode
+
+Students enter a topic and get a structured learning module — no uploads, no complexity:
+
+- Start Here overview
+- Key Terms
+- Source Detective clues
+- What We Know vs What We Infer
+- Common Misconceptions
+- Interactive Quiz with reveal answers
+- Further Reading linked to real sources
+
+### 🍎 Teach Mode
+
+Teachers generate a complete lesson pack in one click:
+
+- Learning objective aligned to curriculum
+- Starter question
+- Classroom activity
+- Discussion questions
+- Quiz with answers
+- Assessment rubric
+- Homework and extension activities
+- Export to PDF or PowerPoint
+
+### 🏛️ Archive Search
+
+Real sources from real institutions — not AI-generated content:
+
+- **OpenAlex** — 4.2M academic papers (free API, no key)
+- **Library of Congress** — 2.1M items (free API, no key)
+- **Met Museum** — 35K+ items (free API, no key)
+- **MusicBrainz** — 1.8M recordings (free API, no key)
+- **Europeana** — 50M items (optional key)
+- **Smithsonian** — 155M items (optional key)
+
+### 🖼️ Image Lab
+
+Upload any artifact image or use generated visuals:
+
+- Original, Enhanced, Boxes, and Comparison viewing modes
+- AI-powered bounding boxes identifying motifs, scripts, borders, materials
+- **Select Area** — draw a rectangle on any region and get instant cultural analysis
+- Every observation becomes a linkable evidence card
+
+### 📊 Infographics
+
+Auto-generated visual cards ready for presentations:
+
+- Key Facts card
+- Timeline Snapshot
+- Did You Know highlights
+- Connections Map mini-graph
+- Download as PNG or export as PDF
+
+### 📤 Export
+
+- Export full workspace as PDF
+- Export lesson pack as PowerPoint (.pptx)
+- Copy summary, JSON, lesson, study notes, or bibliography
+- Full API response inspector for developers
+
+-----
+
+## Why “Not Possible Without Codex”
+
+I built ChronoLens solo in ~5 hours. The project contains:
+
+- 10+ workspace analysis tabs
+- 6 real archive source adapters
+- OpenAI-powered evidence generation with honest classification
+- Interactive knowledge graph
+- Image analysis with bounding boxes
+- PDF and PowerPoint export
+- Full API with documentation
+- Responsive dark-theme UI
+
+Codex wrote the source adapters, generated the workspace components, debugged TypeScript errors, scaffolded the API routes, and built the export logic. Without Codex, this is a month-long team project. With Codex, one developer, one afternoon.
+
+-----
+
+## Tech Stack
+
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **AI:** OpenAI API (GPT-4.1) with graceful fallback
+- **Source APIs:** OpenAlex, Library of Congress, Met Museum, MusicBrainz (all free)
+- **Export:** jsPDF + html2canvas (PDF), pptxgenjs (PowerPoint)
+- **Icons:** lucide-react
+- **Hosting:** Vercel
+- **Build Tool:** OpenAI Codex CLI
+
+-----
+
+## Quick Start
+
+```bash
+git clone https://github.com/RishiKanajam/ChronoLens.git
+cd ChronoLens
+npm install
+```
+
+Create `.env.local`:
+
+```
+OPENAI_API_KEY=sk-your-key-here   # Optional — app works without it
+```
+
+```bash
+npm run dev
+# Open http://localhost:3000
+```
+
+### Environment Variables
+
+|Variable             |Required|Description                                                          |
+|---------------------|--------|---------------------------------------------------------------------|
+|`OPENAI_API_KEY`     |Optional|Enables AI-enriched workspaces. Without it, app runs in fallback mode|
+|`OPENAI_MODEL`       |Optional|Default: gpt-4.1                                                     |
+|`EUROPEANA_API_KEY`  |Optional|Enables Europeana source adapter                                     |
+|`SMITHSONIAN_API_KEY`|Optional|Enables Smithsonian source adapter                                   |
+
+-----
+
+## How It Works
+
+```
+User Query: "How did Islamic geometric patterns spread across civilizations?"
+    │
+    ▼
+┌─────────────────────────────────────────────┐
+│          OpenAI Evidence Generator           │
+│  Generates claims with HONEST classifications│
+│  Fact · Context · Hypothesis · Needs Review  │
+└─────────────────────────────────────────────┘
+    │
+    ├──→ Source Adapters (Met, LoC, OpenAlex, MusicBrainz)
+    │    Real archive records, not generated content
+    │
+    ├──→ Evidence Cards with classification + confidence
+    │
+    ├──→ Knowledge Graph with relationship types
+    │
+    ├──→ Geography with cultural transmission flows
+    │
+    ├──→ Study Module (student-facing)
+    │
+    ├──→ Lesson Pack (teacher-facing)
+    │
+    └──→ Image Analysis with bounding boxes
+              │
+              ▼
+         Full Research Workspace
+         10 tabs · Every claim sourced · Every uncertainty visible
+```
+
+-----
+
+## What Was Built During the Hackathon
+
+**All of the following was built on-site at UTS Startups on April 29, 2026:**
+
+- Complete Next.js application with App Router
+- All workspace tabs (Atlas, Sources, Evidence, Connections, Timeline, Geography, Image Lab, Study, Teach, Infographics, Export)
+- OpenAI integration with evidence classification system
+- 6 real archive source adapters
+- Image Lab with bounding boxes and interactive region selection
+- Study and Teach standalone page flows
+- PDF and PowerPoint export
+- Landing page, Archive page, API documentation
+- Vercel deployment
+
+**Nothing was pre-built.** The project was started from scratch at the hackathon.
+
+-----
 
 ## Social Impact
 
-ChronoLens makes cultural interpretation more careful and teachable. It separates facts from possible connections, marks uncertain claims, and encourages expert or community review for sensitive cultural, religious, Indigenous, or community-specific topics.
+ChronoLens is designed for:
 
-## Source Adapters
+- **Students** who need to distinguish AI facts from AI guesses in their research
+- **Teachers** who want curriculum-ready lesson packs they can trust
+- **Researchers** who need source-linked evidence cards, not AI paragraphs
+- **Museums and cultural institutions** who want to make collections explorable and teachable
+- **Indigenous and cultural heritage groups** who need their knowledge represented accurately, with appropriate uncertainty labels and expert review flags
 
-Adapters normalize source records from:
+Cultural knowledge is too important to be treated as “content.” ChronoLens treats it as evidence.
 
-- Demo data
-- OpenAlex
-- Library of Congress
-- Met Museum API
-- MusicBrainz
-- Crossref
-- Wikidata placeholder
-- Europeana optional
-- Smithsonian optional
+-----
 
-If live APIs fail or keys are missing, adapters return empty arrays and the UI falls back to demo records.
+## Team
 
-## OpenAI Enrichment
+**Rishi Kanajam** — Solo builder
 
-Environment variables:
+- Architecture, AI integration, source adapters, UI, deployment
+- [GitHub](https://github.com/RishiKanajam) · [LinkedIn](https://linkedin.com/in/rishikanajam)
 
-- `OPENAI_API_KEY` optional
-- `OPENAI_MODEL` optional
-- `EUROPEANA_API_KEY` optional
-- `SMITHSONIAN_API_KEY` optional
+-----
 
-OpenAI enrichment is attempted once when creating a workspace if a key exists, and can be run manually from the Export tab. If it fails, the workspace remains in fallback mode.
+## License
 
-## Routes
+MIT
 
-- `/` opening query page
-- `/study` student topic module creator
-- `/teach` teacher lesson builder
-- `/research` research/object/source workspace creator
-- `/archive` source and archive search
-- `/workspace/[workspaceId]` split-screen workspace
-- `/api-docs` API documentation
+-----
 
-## API
-
-- `POST /api/workspaces`
-- `GET /api/workspaces/[workspaceId]`
-- `POST /api/search-sources`
-- `POST /api/workspaces/[workspaceId]/study`
-- `POST /api/workspaces/[workspaceId]/lesson`
-- `POST /api/workspaces/[workspaceId]/image-analysis`
-- `POST /api/workspaces/[workspaceId]/ai-enrich`
-- `GET /api/latest-discoveries`
-
-## Run
-
-```bash
-npm install
-npm run dev
-```
-
-Build check:
-
-```bash
-npm run build
-```
-
-No database is required.
+*Built with OpenAI Codex at the Sydney Codex Hackathon, April 29, 2026*
