@@ -8,9 +8,9 @@ interface InsightCardProps {
 
 export default function InsightCard({ title, value, detail }: InsightCardProps) {
   return (
-    <Card>
+    <Card className="bg-white/95">
       <CardContent className="p-4">
-        <p className="text-xs text-muted-foreground">{title}</p>
+        <p className="text-xs font-medium text-muted-foreground">{title}</p>
         <p className="mt-1.5 text-sm font-semibold text-foreground">{value}</p>
         {detail ? <p className="mt-1.5 text-xs leading-5 text-muted-foreground">{detail}</p> : null}
       </CardContent>

@@ -16,7 +16,7 @@ const modeLabel: Record<UserMode, string> = {
 function Pill({ children, color, bg, title }: { children: React.ReactNode; color: string; bg: string; title?: string }) {
   return (
     <span
-      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+      className="inline-flex items-center rounded-full border border-black/5 px-2.5 py-1 text-xs font-medium shadow-sm"
       style={{ color, background: bg }}
       title={title}
     >
@@ -36,31 +36,31 @@ export default function WorkspaceHeader({
   const aiEnriched = workspace.status.aiMode === "enriched";
 
   return (
-    <header className="shrink-0 border-b border-border p-4 backdrop-blur" style={{ background: "#0f1115" }}>
+    <header className="shrink-0 border-b border-border bg-[#fffaf1] p-3 md:p-4">
       <div className="flex flex-col gap-4">
-        <div className="flex items-start justify-between gap-4">
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto]">
           <div className="min-w-0">
             <div className="mb-2 flex items-center gap-2">
               <Button variant="ghost" size="icon" onClick={onOpenChat} className="lg:hidden" aria-label="Open chat panel">
                 <Menu className="h-4 w-4" />
               </Button>
-              <Pill color="#38bdf8" bg="rgba(56,189,248,0.15)">{modeLabel[workspace.mode]}</Pill>
-              <Pill color="#a9a59b" bg="rgba(255,255,255,0.07)">{workspace.lensType || "topic"}</Pill>
+              <Pill color="#0f766e" bg="#dff3ee">{modeLabel[workspace.mode]}</Pill>
+              <Pill color="#5b5548" bg="#eee7da">{workspace.lensType || "topic"}</Pill>
             </div>
-            <h1 className="truncate text-2xl font-semibold tracking-tight text-foreground">
+            <h1 className="line-clamp-2 text-xl font-semibold tracking-tight text-foreground md:text-2xl">
               {workspace.title}
             </h1>
           </div>
-          <div className="flex max-w-[720px] flex-wrap justify-end gap-2">
-            <Pill color="#a9a59b" bg="rgba(255,255,255,0.07)">{workspace.status.sourcesLoaded} sources</Pill>
-            <Pill color="#fbbf24" bg="rgba(251,191,36,0.15)">{workspace.status.evidenceCards} evidence cards</Pill>
-            <Pill color="#38bdf8" bg="rgba(56,189,248,0.15)">{workspace.status.connectionsMapped} connections</Pill>
+          <div className="flex min-w-0 flex-wrap items-start gap-2 xl:max-w-[760px] xl:justify-end">
+            <Pill color="#5b5548" bg="#fff">{workspace.status.sourcesLoaded} sources</Pill>
+            <Pill color="#9a6417" bg="#f7ead2">{workspace.status.evidenceCards} evidence cards</Pill>
+            <Pill color="#0f766e" bg="#dff3ee">{workspace.status.connectionsMapped} connections</Pill>
             {workspace.status.lessonReady && (
-              <Pill color="#22c55e" bg="rgba(34,197,94,0.15)">lesson ready</Pill>
+              <Pill color="#15803d" bg="#dcfce7">lesson ready</Pill>
             )}
             <Pill
-              color={aiEnriched ? "#38bdf8" : workspace.status.aiMode === "quota_exceeded" ? "#f87171" : "#a9a59b"}
-              bg={aiEnriched ? "rgba(56,189,248,0.15)" : workspace.status.aiMode === "quota_exceeded" ? "rgba(248,113,113,0.15)" : "rgba(255,255,255,0.07)"}
+              color={aiEnriched ? "#0f766e" : workspace.status.aiMode === "quota_exceeded" ? "#b91c1c" : "#5b5548"}
+              bg={aiEnriched ? "#dff3ee" : workspace.status.aiMode === "quota_exceeded" ? "#fee2e2" : "#eee7da"}
               title={workspace.status.aiMode === "quota_exceeded" ? "OpenAI quota exceeded — add credits at platform.openai.com/billing" : undefined}
             >
               {aiEnriched

@@ -16,7 +16,7 @@ export default function DiscoveriesTab({ workspace }: { workspace: Workspace }) 
             </p>
           </CardContent>
         </Card>
-        <div className="grid gap-3 lg:grid-cols-2">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-3">
           {workspace.discoveries.map((item) => (
             <Card key={item.id}>
               <CardContent className="p-5 space-y-3">

@@ -129,7 +129,7 @@ export default function StudyPage() {
             {/* Overview */}
             <Card>
               <CardContent className="p-6 space-y-4">
-                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>Start Here</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">Start Here</p>
                 <div className="text-base leading-relaxed text-foreground whitespace-pre-line" style={{ fontSize: "16px", lineHeight: "1.7" }}>
                   {sm.overview}
                 </div>
@@ -140,7 +140,7 @@ export default function StudyPage() {
             <div className="grid gap-4 md:grid-cols-2">
               <Card>
                 <CardContent className="p-5 space-y-3">
-                  <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>What We Know</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary">What We Know</p>
                   <ul className="space-y-2">
                     {sm.whatWeKnow.map((item, i) => (
                       <li key={i} className="flex gap-2 text-sm text-muted-foreground leading-5">
@@ -152,7 +152,7 @@ export default function StudyPage() {
               </Card>
               <Card>
                 <CardContent className="p-5 space-y-3">
-                  <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>What We Infer</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary">What We Infer</p>
                   <ul className="space-y-2">
                     {sm.whatWeInfer.map((item, i) => (
                       <li key={i} className="flex gap-2 text-sm text-muted-foreground leading-5">
@@ -166,7 +166,7 @@ export default function StudyPage() {
 
             {/* Key Terms */}
             <div>
-              <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>Key Terms</p>
+              <p className="mb-3 text-xs font-bold uppercase tracking-widest text-primary">Key Terms</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 {sm.keyTerms.map((t) => (
                   <Card key={t.term}>
@@ -182,7 +182,7 @@ export default function StudyPage() {
             {/* Source Detective */}
             <Card>
               <CardContent className="p-5 space-y-3">
-                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>Source Detective</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">Source Detective</p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {sm.sourceDetectiveClues.map((clue, i) => (
                     <div key={i} className="rounded-xl border border-border p-4 text-sm leading-6 text-muted-foreground">{clue}</div>
@@ -194,7 +194,7 @@ export default function StudyPage() {
             {/* Quiz */}
             <Card>
               <CardContent className="p-5 space-y-3">
-                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>Quiz</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">Quiz</p>
                 {sm.quiz.map((item, i) => (
                   <div key={i} className="rounded-xl border border-border p-5 space-y-3">
                     <p className="text-sm font-semibold text-foreground">{i + 1}. {item.question}</p>
@@ -210,7 +210,7 @@ export default function StudyPage() {
             {/* Misconceptions */}
             <Card>
               <CardContent className="p-5 space-y-3">
-                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>Common Misconceptions</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">Common Misconceptions</p>
                 <ul className="space-y-2">
                   {sm.misconceptions.map((item, i) => (
                     <li key={i} className="flex gap-2 text-sm text-muted-foreground leading-5">

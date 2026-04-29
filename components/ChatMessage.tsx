@@ -31,7 +31,7 @@ export default function ChatMessage({ message }: { message: ChatMessageModel }) 
         </span>
       ) : null}
       <div
-        className={`max-w-[86%] rounded-2xl px-4 py-3 text-sm leading-6 ${
+        className={`max-w-[86%] rounded-lg px-4 py-3 text-sm leading-6 ${
           isUser
             ? "bg-primary text-primary-foreground"
             : "bg-secondary text-muted-foreground"

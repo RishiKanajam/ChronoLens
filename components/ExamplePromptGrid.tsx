@@ -11,15 +11,15 @@ const prompts = [
 
 export default function ExamplePromptGrid({ onSelect }: { onSelect: (prompt: string) => void }) {
   return (
-    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,250px),1fr))] auto-rows-[minmax(104px,auto)] gap-3">
       {prompts.map(({ emoji, text }) => (
         <button
           key={text}
           type="button"
           onClick={() => onSelect(text)}
-          className="group relative flex items-start gap-3 rounded-xl border border-border bg-card p-5 text-left text-sm leading-6 text-muted-foreground transition-all hover:border-primary/70 hover:bg-card/80 hover:text-foreground before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:rounded-l-xl before:bg-primary before:opacity-0 before:transition-opacity hover:before:opacity-100"
+          className="group relative flex items-start gap-3 rounded-lg border border-border bg-[#f7f1e7] p-5 text-left text-sm leading-6 text-muted-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/60 hover:bg-white hover:text-foreground"
         >
-          <span className="shrink-0 text-xl">{emoji}</span>
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-xl shadow-sm">{emoji}</span>
           <span>{text}</span>
         </button>
       ))}

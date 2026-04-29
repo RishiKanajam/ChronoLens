@@ -1,5 +1,5 @@
 import { generateWorkspaceContent, enrichWorkspaceWithOpenAI } from "@/lib/ai/openai";
-import { createFallbackWorkspace, fallbackLessonPack, fallbackStudyModule } from "@/lib/contextualFallback";
+import { createFallbackWorkspace, enrichFallbackWorkspaceSections, fallbackLessonPack, fallbackStudyModule } from "@/lib/contextualFallback";
 import { searchSources } from "@/lib/sourceSearch";
 import {
   CreateWorkspaceRequest,
@@ -31,12 +31,36 @@ function uniqueSources(sources: SourceRecord[]) {
   });
 }
 
+async function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((resolve) => {
+        timer = setTimeout(() => resolve(fallback), ms);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
 export function listWorkspaces() {
   return Array.from(store().values());
 }
 
 export function getWorkspace(id: string) {
-  return store().get(id);
+  const workspace = store().get(id);
+  if (!workspace) return undefined;
+  const needsFallbackSections =
+    !workspace.evidenceCards.length ||
+    !workspace.connectionGraph.edges.length ||
+    !workspace.timelineEvents.length ||
+    !workspace.geographyPoints?.length;
+  if (!needsFallbackSections) return workspace;
+  const hydrated = enrichFallbackWorkspaceSections(workspace);
+  store().set(id, hydrated);
+  return hydrated;
 }
 
 export function saveWorkspace(workspace: Workspace) {
@@ -50,17 +74,14 @@ export async function createWorkspace(input: CreateWorkspaceRequest) {
 
   const liveSources = uniqueSources([
     ...(input.sourceRecords || []),
-    ...(await searchSources(query)),
+    ...(await withTimeout(searchSources(query), 6500, [])),
   ]).slice(0, 16);
 
   const shell = createFallbackWorkspace(input, liveSources);
 
-  console.log(`[ChronoLens] createWorkspace: query="${query}" liveSources=${liveSources.length} hasApiKey=${!!process.env.OPENAI_API_KEY}`);
-
   if (process.env.OPENAI_API_KEY) {
     try {
-      const generated = await generateWorkspaceContent(query, shell);
-      console.log(`[ChronoLens] generateWorkspaceContent returned: ${generated ? `evidenceCards=${generated.evidenceCards?.length ?? 0}` : "null (fallback)"}`);
+      const generated = await withTimeout(generateWorkspaceContent(query, shell), 12000, null);
       if (generated) {
         return saveWorkspace({
           ...shell,

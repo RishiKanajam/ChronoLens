@@ -1,4 +1,5 @@
 import {
+  ArchitectureLayer,
   ClaimClassification,
   ConnectionEdge,
   ConnectionNode,
@@ -11,7 +12,7 @@ import {
   TimelineEvent,
   Workspace,
 } from "@/lib/types";
-import { fallbackLessonPack, fallbackStudyModule, generatedTopicSvg, inferTitle } from "@/lib/contextualFallback";
+import { defaultArchitectureLayers, fallbackLessonPack, fallbackStudyModule, generatedTopicSvg, inferTitle } from "@/lib/contextualFallback";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -72,8 +73,14 @@ const workspaceSystemPrompt = `You are ChronoLens, a cultural research engine. G
   "culturalFlows": [
     {"id": "f1", "from": "g1", "to": "g2", "flowType": "trade_route|colonial_influence|migration|religious_transmission|artistic_influence", "label": "...", "confidence": 0.7, "evidence": "..."},
     ...4 cultural flows
+  ],
+  "architectureLayers": [
+    {"id": "l1", "name": "layer name", "description": "specific architectural observation", "material": "material", "period": "date or period", "function": "structural or cultural function", "yPosition": 0, "height": 12, "color": "#38bdf8"},
+    ...5-8 architecture layers from top to bottom
   ]
 }
+
+Also generate architectureLayers: an array of {id, name, description, material, period, function, yPosition (0-100 percentage from top), height (percentage), color} representing structural layers of the architecture from top to bottom.
 
 IMPORTANT RULES:
 - Generate data SPECIFIC to the user's query. If they ask about "Islamic Geometric Patterns", every source, evidence card, connection, and timeline event must be about Islamic geometric patterns — NOT about lotus motifs.
@@ -122,6 +129,37 @@ function provider(value: unknown): SourceRecord["provider"] {
     "crossref",
   ];
   return allowed.includes(value as SourceRecord["provider"]) ? (value as SourceRecord["provider"]) : "openalex";
+}
+
+function normalizeArchitectureLayers(value: unknown): ArchitectureLayer[] {
+  if (!Array.isArray(value)) return defaultArchitectureLayers;
+
+  const layers = value
+    .map((item, index) => {
+      const layer = (item || {}) as JsonRecord;
+      const fallback = defaultArchitectureLayers[index] || defaultArchitectureLayers[defaultArchitectureLayers.length - 1];
+      const yPosition = score(layer.yPosition, fallback.yPosition);
+      const height = score(layer.height, fallback.height);
+      const color = typeof layer.color === "string" && /^#[0-9a-f]{6}$/i.test(layer.color)
+        ? layer.color
+        : fallback.color;
+
+      return {
+        id: String(layer.id || `l${index + 1}`),
+        name: String(layer.name || fallback.name),
+        description: String(layer.description || fallback.description),
+        material: String(layer.material || fallback.material),
+        period: String(layer.period || fallback.period),
+        function: String(layer.function || fallback.function),
+        yPosition: Math.min(100, Math.max(0, yPosition)),
+        height: Math.min(100, Math.max(4, height)),
+        color,
+      } satisfies ArchitectureLayer;
+    })
+    .filter((layer) => layer.name && layer.height > 0)
+    .slice(0, 8);
+
+  return layers.length ? layers : defaultArchitectureLayers;
 }
 
 function normalizeSources(value: unknown, liveSources: SourceRecord[]): SourceRecord[] {
@@ -210,12 +248,15 @@ const VALID_MODELS = [
   "gpt-4o", "gpt-4o-mini",
   "gpt-4-turbo", "gpt-4",
   "gpt-3.5-turbo",
-  "gpt-4.5", "gpt-5", "gpt-5.5",
-  "o1", "o1-mini", "o3", "o3-mini", "o4-mini",
+  "gpt-4.5",
 ];
 
 function resolveModel(): string {
   const envModel = process.env.OPENAI_MODEL;
+  if (envModel?.startsWith("gpt-5") || envModel?.startsWith("o")) {
+    console.warn(`[ChronoLens] OPENAI_MODEL="${envModel}" is not used for Chat Completions JSON mode — falling back to gpt-4.1`);
+    return "gpt-4.1";
+  }
   if (envModel && VALID_MODELS.includes(envModel)) return envModel;
   if (envModel) {
     console.warn(`[ChronoLens] OPENAI_MODEL="${envModel}" may not be valid — falling back to gpt-4.1`);
@@ -230,44 +271,53 @@ export async function callOpenAIJson<T>(system: string, user: string, maxTokens 
     return null;
   }
 
-  const model = resolveModel();
-  console.log(`[ChronoLens] Calling OpenAI model=${model} max_tokens=${maxTokens}`);
+  const preferredModel = resolveModel();
+  const models = preferredModel === "gpt-4.1" ? [preferredModel] : [preferredModel, "gpt-4.1"];
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0.25,
-        max_tokens: maxTokens,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-      }),
-    });
+    for (const model of models) {
+      const usesCompletionTokenParam = /^(gpt-5|o\d|o1|o3|o4)/.test(model);
+      const tokenParam = usesCompletionTokenParam
+        ? { max_completion_tokens: maxTokens }
+        : { max_tokens: maxTokens };
+      const temperatureParam = usesCompletionTokenParam ? {} : { temperature: 0.25 };
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          ...temperatureParam,
+          ...tokenParam,
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: user },
+          ],
+        }),
+      });
 
-    if (!response.ok) {
-      const errBody = await response.json().catch(() => ({})) as { error?: { message?: string; code?: string } };
-      console.error(`[ChronoLens] OpenAI API error ${response.status}: ${errBody.error?.message || "unknown"}`);
-      if (response.status === 429 || errBody.error?.code === "insufficient_quota") {
-        throw new Error("quota_exceeded");
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({})) as { error?: { message?: string; code?: string } };
+        console.error(`[ChronoLens] OpenAI API error ${response.status}: ${errBody.error?.message || "unknown"}`);
+        if (response.status === 429 || errBody.error?.code === "insufficient_quota") {
+          throw new Error("quota_exceeded");
+        }
+        continue;
       }
-      return null;
+
+      const json = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
+      const content = json.choices?.[0]?.message?.content;
+      if (!content) {
+        console.warn(`[ChronoLens] OpenAI model=${model} returned no content; trying fallback model if available.`);
+        continue;
+      }
+      return JSON.parse(content) as T;
     }
 
-    const json = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
-    const content = json.choices?.[0]?.message?.content;
-    if (!content) {
-      console.error("[ChronoLens] OpenAI returned no content in choices.");
-      return null;
-    }
-    return JSON.parse(content) as T;
+    return null;
   } catch (err) {
     if (err instanceof Error && err.message === "quota_exceeded") throw err;
     console.error("[ChronoLens] callOpenAIJson threw:", err);
@@ -276,7 +326,7 @@ export async function callOpenAIJson<T>(system: string, user: string, maxTokens 
 }
 
 export async function generateWorkspaceContent(query: string, workspace: Workspace): Promise<Partial<Workspace> | null> {
-  const parsed = await callOpenAIJson<JsonRecord>(workspaceSystemPrompt, query, 4000);
+  const parsed = await callOpenAIJson<JsonRecord>(workspaceSystemPrompt, query, 7000);
   if (!parsed) return null;
 
   const sourceRecords = normalizeSources(parsed.sourceRecords, workspace.sourceRecords);
@@ -392,6 +442,7 @@ export async function generateWorkspaceContent(query: string, workspace: Workspa
     timelineEvents,
     geographyPoints,
     culturalFlows,
+    architectureLayers: normalizeArchitectureLayers(parsed.architectureLayers),
     generatedImageSvg: generatedTopicSvg(query),
     studyModule: normalizeStudy(parsed.studyModule, query),
     lessonPack: normalizeLesson(parsed.lessonPack, query),

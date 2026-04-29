@@ -4,7 +4,7 @@ import { Workspace } from "@/lib/types";
 
 export default function TimelineRibbon({ workspace }: { workspace: Workspace }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-border bg-card p-5">
+    <div className="overflow-x-auto rounded-lg border border-border bg-card p-5">
       <div className="flex min-w-[820px] items-start gap-4">
         {workspace.timelineEvents.map((event, index) => (
           <article key={event.id} className="relative flex-1">

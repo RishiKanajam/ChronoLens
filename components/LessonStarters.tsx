@@ -1,13 +1,18 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BookOpen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-const lessons = [
+export type LessonStarter = {
+  year: string;
+  topic: string;
+  curriculum: string;
+};
+
+const lessons: LessonStarter[] = [
   { year: "Year 7", topic: "Mesopotamian Writing Systems", curriculum: "History & Literacy" },
   { year: "Year 8", topic: "Silk Road Cultural Exchange", curriculum: "Geography & Trade" },
   { year: "Year 9", topic: "Aboriginal Dreaming Stories", curriculum: "First Nations & Identity" },
@@ -16,21 +21,18 @@ const lessons = [
   { year: "Year 12", topic: "Buddhist Art Across Asia", curriculum: "Religion & Visual Culture" },
 ];
 
-export default function LessonStarters() {
-  const router = useRouter();
+export default function LessonStarters({
+  onGenerate,
+}: {
+  onGenerate: (lesson: LessonStarter) => Promise<void> | void;
+}) {
   const [loading, setLoading] = useState<string | null>(null);
 
-  async function generateLesson(topic: string) {
+  async function generateLesson(lesson: LessonStarter) {
     if (loading) return;
-    setLoading(topic);
+    setLoading(lesson.topic);
     try {
-      const res = await fetch("/api/workspaces", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: topic, mode: "teacher", lensType: "topic" }),
-      });
-      const workspace = (await res.json()) as { id: string };
-      router.push(`/workspace/${workspace.id}?tab=teach`);
+      await onGenerate(lesson);
     } finally {
       setLoading(null);
     }
@@ -42,12 +44,12 @@ export default function LessonStarters() {
         <BookOpen className="h-4 w-4 text-primary" />
         Ready-made lesson starters
       </div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-3">
         {lessons.map((lesson) => (
           <Card
             key={lesson.topic}
             className="group cursor-pointer transition-colors hover:border-primary/60 hover:bg-card/80"
-            onClick={() => generateLesson(lesson.topic)}
+            onClick={() => generateLesson(lesson)}
           >
             <CardContent className="p-4 space-y-2">
               <div className="flex items-center justify-between gap-2">

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { fallbackCulturalFlows, fallbackGeographyPoints } from "@/lib/contextualFallback";
 import { CulturalFlow, GeographyPoint, Workspace } from "@/lib/types";
 
 // ── Mercator projection helper ────────────────────────────────────────────────
@@ -42,11 +42,11 @@ const FLOW_STYLES: Record<
   CulturalFlow["flowType"],
   { label: string; color: string; dash: string }
 > = {
-  trade_route:           { label: "Trade route",             color: "#d4a857", dash: "8 4" },
+  trade_route:           { label: "Trade route",             color: "#b7791f", dash: "8 4" },
   colonial_influence:    { label: "Colonial influence",      color: "#ef4444", dash: "4 4" },
-  migration:             { label: "Migration pattern",       color: "#22c55e", dash: "6 3" },
-  religious_transmission:{ label: "Religious transmission",  color: "#38bdf8", dash: "10 4" },
-  artistic_influence:    { label: "Artistic influence",      color: "#d2a8ff", dash: "6 4" },
+  migration:             { label: "Migration pattern",       color: "#16a34a", dash: "6 3" },
+  religious_transmission:{ label: "Religious transmission",  color: "#0f766e", dash: "10 4" },
+  artistic_influence:    { label: "Artistic influence",      color: "#7c3aed", dash: "6 4" },
 };
 
 function confidenceLabel(c: number): "High" | "Medium" | "Low" {
@@ -57,8 +57,12 @@ function confidenceLabel(c: number): "High" | "Medium" | "Low" {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function GeographyTab({ workspace }: { workspace: Workspace }) {
-  const points = workspace.geographyPoints ?? [];
-  const flows  = workspace.culturalFlows  ?? [];
+  const points = workspace.geographyPoints?.length
+    ? workspace.geographyPoints
+    : fallbackGeographyPoints(workspace.query, workspace.sourceRecords);
+  const flows = workspace.culturalFlows?.length
+    ? workspace.culturalFlows
+    : fallbackCulturalFlows(points);
 
   const [selected, setSelected] = useState<GeographyPoint | null>(points[0] ?? null);
   const [tooltip, setTooltip]   = useState<{ point: GeographyPoint; x: number; y: number } | null>(null);
@@ -71,8 +75,7 @@ export default function GeographyTab({ workspace }: { workspace: Workspace }) {
             <p className="text-2xl">🌍</p>
             <p className="text-lg font-semibold text-foreground">No geography data yet</p>
             <p className="text-sm text-muted-foreground leading-6">
-              Geography data is generated when <code className="text-primary">OPENAI_API_KEY</code> is set.
-              Try the <strong>Lotus Motif demo</strong> which includes sample geography for 6 locations.
+              Geography data is generated when <code className="text-primary">OPENAI_API_KEY</code> is set for the current query.
             </p>
           </CardContent>
         </Card>
@@ -85,23 +88,22 @@ export default function GeographyTab({ workspace }: { workspace: Workspace }) {
   );
 
   return (
-    <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[1fr_320px]">
+    <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
       {/* ── Main column: map + legend + cards ── */}
-      <ScrollArea className="min-h-0">
-        <div className="space-y-4 pr-3">
+      <div className="min-w-0 space-y-4">
 
           {/* SVG world map */}
           <div
-            className="relative overflow-hidden rounded-2xl border border-border"
-            style={{ background: "#101214" }}
+            className="relative overflow-hidden rounded-lg border border-border shadow-sm"
+            style={{ background: "#fffdf8" }}
           >
-            <svg viewBox="0 0 1000 500" className="w-full block select-none">
+            <svg viewBox="0 0 1000 500" className="block aspect-[2/1] max-h-[min(48vh,520px)] w-full select-none">
               {/* Ocean */}
-              <rect width="1000" height="500" fill="#101214" />
+              <rect width="1000" height="500" fill="#f7f1e7" />
 
               {/* Continents */}
               {CONTINENTS.map((d, i) => (
-                <path key={i} d={d} fill="#17191c" stroke="#2a2d31" strokeWidth="1.2" />
+                <path key={i} d={d} fill="#eee7da" stroke="#ddd5c8" strokeWidth="1.2" />
               ))}
 
               {/* Cultural flow lines */}
@@ -145,7 +147,7 @@ export default function GeographyTab({ workspace }: { workspace: Workspace }) {
                       cx={x} cy={y}
                       r={isSelected ? 16 : 12}
                       fill="none"
-                      stroke={isSelected ? "#d4a857" : "#38bdf8"}
+                      stroke={isSelected ? "#b7791f" : "#0f766e"}
                       strokeWidth="1"
                       opacity={isSelected ? 0.7 : 0.35}
                       className="geo-ping"
@@ -154,12 +156,12 @@ export default function GeographyTab({ workspace }: { workspace: Workspace }) {
                     <circle
                       cx={x} cy={y}
                       r={isSelected ? 7 : 5}
-                      fill={isSelected ? "#d4a857" : "#38bdf8"}
+                      fill={isSelected ? "#b7791f" : "#0f766e"}
                     />
                     {/* Name label */}
                     <text
                       x={x + 10} y={y - 7}
-                      fill={isSelected ? "#d4a857" : "#f5f1e8"}
+                      fill={isSelected ? "#b7791f" : "#121416"}
                       fontSize="10"
                       fontFamily="Arial, sans-serif"
                       fontWeight={isSelected ? "700" : "400"}
@@ -180,12 +182,12 @@ export default function GeographyTab({ workspace }: { workspace: Workspace }) {
                 return (
                   <g pointerEvents="none">
                     <rect x={tx - 6} y={ty - 14} width="192" height="64"
-                      rx="6" fill="#17191c" stroke="#2a2d31" strokeWidth="1" />
-                    <text x={tx + 3} y={ty + 2} fill="#38bdf8" fontSize="11"
+                      rx="6" fill="#fffdf8" stroke="#ddd5c8" strokeWidth="1" />
+                    <text x={tx + 3} y={ty + 2} fill="#0f766e" fontSize="11"
                       fontWeight="700" fontFamily="Arial">{point.name}</text>
-                    <text x={tx + 3} y={ty + 18} fill="#a9a59b" fontSize="9"
+                    <text x={tx + 3} y={ty + 18} fill="#6f6759" fontSize="9"
                       fontFamily="Arial">{point.region} · {point.period}</text>
-                    <text x={tx + 3} y={ty + 33} fill="#f5f1e8" fontSize="9"
+                    <text x={tx + 3} y={ty + 33} fill="#121416" fontSize="9"
                       fontFamily="Arial">
                       {point.culturalElements.slice(0, 2).join(", ")}
                     </text>
@@ -195,6 +197,9 @@ export default function GeographyTab({ workspace }: { workspace: Workspace }) {
                 );
               })()}
             </svg>
+            <div className="border-t border-border bg-[#fffaf1] px-4 py-2 text-xs leading-5 text-muted-foreground">
+              Why this map: it plots only the workspace places and possible cultural flows, so location claims stay tied to evidence instead of becoming a decorative world map.
+            </div>
           </div>
 
           {/* Flow type legend */}
@@ -249,10 +254,9 @@ export default function GeographyTab({ workspace }: { workspace: Workspace }) {
             </div>
           </div>
         </div>
-      </ScrollArea>
 
       {/* ── Side panel: selected location details ── */}
-      <div className="space-y-4">
+      <div className="min-w-0 space-y-4 xl:sticky xl:top-0 xl:self-start">
         {selected ? (
           <>
             <Card>

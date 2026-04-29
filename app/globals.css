@@ -4,29 +4,29 @@
 
 @layer base {
   :root {
-    /* ChronoLens dark palette mapped to shadcn CSS variables */
-    --background: 210 17% 2%;          /* #050607 */
-    --foreground: 55 39% 93%;          /* #f5f1e8 */
-    --card: 220 17% 7%;                /* #0f1115 blue-dark */
-    --card-foreground: 55 39% 93%;     /* #f5f1e8 */
-    --popover: 216 10% 10%;            /* #17191c */
-    --popover-foreground: 55 39% 93%;  /* #f5f1e8 */
-    --primary: 198 93% 60%;            /* #38bdf8 sky blue */
-    --primary-foreground: 210 17% 2%;  /* dark bg for sky-blue buttons */
-    --secondary: 216 10% 10%;          /* #17191c */
-    --secondary-foreground: 43 8% 63%; /* #a9a59b */
-    --muted: 210 11% 7%;               /* #101214 */
-    --muted-foreground: 43 8% 63%;     /* #a9a59b */
-    --accent: 39 59% 59%;              /* #d4a857 gold */
-    --accent-foreground: 210 17% 2%;
+    /* ChronoLens light workspace palette */
+    --background: 42 33% 94%;          /* #f3f0e8 */
+    --foreground: 210 9% 8%;           /* #121416 */
+    --card: 42 55% 98%;                /* #fffdf8 */
+    --card-foreground: 210 9% 8%;
+    --popover: 42 55% 98%;
+    --popover-foreground: 210 9% 8%;
+    --primary: 174 58% 33%;            /* grounded teal */
+    --primary-foreground: 42 55% 98%;
+    --secondary: 39 28% 89%;           /* warm light rail */
+    --secondary-foreground: 210 9% 16%;
+    --muted: 42 30% 91%;
+    --muted-foreground: 40 9% 42%;
+    --accent: 38 57% 46%;              /* evidence gold */
+    --accent-foreground: 42 55% 98%;
     --destructive: 0 84% 60%;          /* #ef4444 */
     --destructive-foreground: 55 39% 93%;
-    --border: 228 14% 14%;             /* #1e2028 blue-gray */
-    --input: 216 10% 10%;              /* #17191c */
-    --ring: 198 93% 60%;               /* #38bdf8 sky blue */
+    --border: 37 22% 82%;
+    --input: 42 55% 98%;
+    --ring: 174 58% 33%;
     --radius: 0.75rem;
 
-    color-scheme: dark;
+    color-scheme: light;
     --font-inter: Arial, Helvetica, sans-serif;
     --font-cormorant: Georgia, "Times New Roman", serif;
   }
@@ -39,6 +39,8 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 118, 110, 0.34) transparent;
 }
 
 body {
@@ -51,23 +53,43 @@ body {
 }
 
 ::selection {
-  background: rgba(56, 189, 248, 0.36);
+  background: rgba(15, 118, 110, 0.24);
+}
+
+*::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(15, 118, 110, 0.28);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 118, 110, 0.45);
 }
 
 .glass-panel {
-  border: 1px solid rgba(212, 168, 87, 0.12);
+  border: 1px solid rgba(34, 29, 20, 0.08);
   background: hsl(var(--card));
-  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(18px);
+  box-shadow: 0 24px 70px rgba(35, 29, 20, 0.12);
 }
 
 .map-grid {
-  background-color: hsl(var(--background));
-  background-image: none;
+  background-color: #fffdf8;
+  background-image:
+    linear-gradient(rgba(18, 20, 22, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18, 20, 22, 0.055) 1px, transparent 1px);
+  background-size: 34px 34px;
 }
 
 .museum-border {
-  border: 1px solid rgba(212, 168, 87, 0.22);
+  border: 1px solid rgba(183, 121, 31, 0.22);
 }
 
 .text-balance {

@@ -138,7 +138,7 @@ export default function SourcesTab({
           </CardContent>
         </Card>
         <ScrollArea className="min-h-0 flex-1">
-          <div className="grid gap-3 pr-3 lg:grid-cols-2">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-3 pr-3">
             {sources.map((source) => (
               <SourceCard
                 key={source.id}

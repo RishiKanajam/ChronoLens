@@ -9,7 +9,7 @@ export default function TimelineTab({ workspace }: { workspace: Workspace }) {
     <div className="flex h-full min-h-0 flex-col gap-4">
       <TimelineRibbon workspace={workspace} />
       <ScrollArea className="min-h-0 flex-1">
-        <div className="grid gap-3 pr-3 lg:grid-cols-2">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-3 pr-3">
           {workspace.timelineEvents.map((event) => {
             const sources = workspace.sourceRecords.filter((s) => event.sourceIds?.includes(s.id));
             return (

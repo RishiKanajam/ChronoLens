@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Wand2 } from "lucide-react";
 import AppFrame from "@/components/AppFrame";
-import LessonStarters from "@/components/LessonStarters";
+import LessonStarters, { LessonStarter } from "@/components/LessonStarters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,8 +33,22 @@ export default function TeachPage() {
     return () => clearInterval(t);
   }, []);
 
-  async function generate() {
-    if (!topic.trim() || loading) return;
+  async function generate(override?: {
+    topic?: string;
+    classLevel?: string;
+    duration?: string;
+    learningGoal?: string;
+  }) {
+    const nextTopic = (override?.topic || topic).trim();
+    const nextClassLevel = override?.classLevel || classLevel;
+    const nextDuration = override?.duration || duration;
+    const nextLearningGoal = override?.learningGoal || learningGoal;
+    if (!nextTopic || loading) return;
+
+    setTopic(nextTopic);
+    setClassLevel(nextClassLevel);
+    setDuration(nextDuration);
+    setLearningGoal(nextLearningGoal);
     setLoading(true);
     setError(null);
     setResult(null);
@@ -42,7 +56,12 @@ export default function TeachPage() {
       const res = await fetch("/api/generate-lesson", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic, classLevel, duration, learningGoal }),
+        body: JSON.stringify({
+          topic: nextTopic,
+          classLevel: nextClassLevel,
+          duration: nextDuration,
+          learningGoal: nextLearningGoal,
+        }),
       });
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
@@ -55,6 +74,17 @@ export default function TeachPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function generateStarter(starter: LessonStarter) {
+    await generate({
+      topic: starter.topic,
+      classLevel: starter.year,
+      duration: "45 minutes",
+      learningGoal: starter.curriculum.toLowerCase().includes("geography")
+        ? "comparison across cultures"
+        : "source analysis",
+    });
   }
 
   const lesson = result;
@@ -83,7 +113,7 @@ export default function TeachPage() {
                 placeholder={placeholders[phIndex]}
                 className="flex-1"
               />
-              <Button onClick={generate} disabled={loading || !topic.trim()}>
+              <Button onClick={() => generate()} disabled={loading || !topic.trim()}>
                 <Wand2 className="h-4 w-4" />
                 {loading ? "Generating…" : "Generate Lesson"}
               </Button>
@@ -143,13 +173,13 @@ export default function TeachPage() {
             <div className="grid gap-4 md:grid-cols-2">
               <Card>
                 <CardContent className="p-5 space-y-2">
-                  <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>Classroom Activity</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary">Classroom Activity</p>
                   <p className="text-sm leading-6 text-muted-foreground">{lesson.activity}</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-5 space-y-2">
-                  <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>Map / Timeline Activity</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary">Map / Timeline Activity</p>
                   <p className="text-sm leading-6 text-muted-foreground">{lesson.mapTimelineActivity}</p>
                 </CardContent>
               </Card>
@@ -159,7 +189,7 @@ export default function TeachPage() {
             <div className="grid gap-4 md:grid-cols-2">
               <Card>
                 <CardContent className="p-5 space-y-3">
-                  <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>Discussion Questions</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary">Discussion Questions</p>
                   <ol className="space-y-2 list-decimal list-inside">
                     {lesson.discussionQuestions.map((q, i) => (
                       <li key={i} className="text-sm leading-5 text-muted-foreground">{q}</li>
@@ -169,7 +199,7 @@ export default function TeachPage() {
               </Card>
               <Card>
                 <CardContent className="p-5 space-y-3">
-                  <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>Quiz Questions</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary">Quiz Questions</p>
                   <ol className="space-y-2 list-decimal list-inside">
                     {lesson.quizQuestions.map((q, i) => (
                       <li key={i} className="text-sm leading-5 text-muted-foreground">{q}</li>
@@ -211,7 +241,7 @@ export default function TeachPage() {
               <span className="text-xs text-muted-foreground">or pick a topic below</span>
               <div className="flex-1 border-t border-border" />
             </div>
-            <LessonStarters />
+            <LessonStarters onGenerate={generateStarter} />
           </>
         )}
       </div>

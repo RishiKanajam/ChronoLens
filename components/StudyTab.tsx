@@ -20,7 +20,7 @@ export default function StudyTab({ workspace }: { workspace: Workspace }) {
           <Card>
             <CardContent className="p-5 space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>Start Here</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">Start Here</p>
                 <div className="flex flex-wrap gap-2">
                   <ReadAloudButton text={sm.overview} />
                   <Button variant="secondary" size="sm" onClick={() => navigator.clipboard.writeText(JSON.stringify(sm, null, 2))}>
@@ -95,7 +95,7 @@ export default function StudyTab({ workspace }: { workspace: Workspace }) {
           </Card>
           <Card>
             <CardContent className="p-5 space-y-2">
-              <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>Common Misconceptions</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-primary">Common Misconceptions</p>
               <ul className="space-y-2">
                 {sm.misconceptions.map((item, i) => (
                   <li key={i} className="flex gap-2 text-sm leading-5 text-muted-foreground">
@@ -107,7 +107,7 @@ export default function StudyTab({ workspace }: { workspace: Workspace }) {
           </Card>
           <Card>
             <CardContent className="p-5 space-y-3">
-              <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#38bdf8" }}>Quiz</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-primary">Quiz</p>
               {sm.quiz.map((item, idx) => (
                 <Card key={item.question} className="border border-border">
                   <CardContent className="p-5 space-y-3">

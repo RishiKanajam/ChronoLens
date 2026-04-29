@@ -11,6 +11,7 @@ const tabs: Array<{ id: WorkspaceTab; label: string }> = [
   { id: "timeline", label: "Timeline" },
   { id: "geography", label: "Geography" },
   { id: "image", label: "Image Lab" },
+  { id: "architecture", label: "Architecture" },
   { id: "study", label: "Study" },
   { id: "infographics", label: "Infographics" },
   { id: "teach", label: "Teach" },

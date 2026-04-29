@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { Archive, Image as ImageIcon, Network, Search, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,7 +42,7 @@ export default function CreateWorkspaceForm({
   const [topic, setTopic] = useState("");
   const [notes, setNotes] = useState("");
   const [mode, setMode] = useState<UserMode>(defaultMode);
-  const [lensType, setLensType] = useState<LensType>("topic");
+  const [lensType, setLensType] = useState<LensType>(fields === "research" ? "artifact" : "topic");
   const [image, setImage] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
@@ -57,13 +58,18 @@ export default function CreateWorkspaceForm({
     const query = [topic, notes].filter(Boolean).join("\n");
     if (!query.trim()) return;
     setLoading(true);
-    const response = await fetch("/api/workspaces", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query, mode, lensType, uploadedImageDataUrl: image }),
-    });
-    const workspace = (await response.json()) as { id: string };
-    router.push(`/workspace/${workspace.id}?tab=${defaultTab}`);
+    try {
+      const response = await fetch("/api/workspaces", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, mode, lensType, uploadedImageDataUrl: image }),
+      });
+      if (!response.ok) throw new Error("Workspace creation failed");
+      const workspace = (await response.json()) as { id: string };
+      router.push(`/workspace/${workspace.id}?tab=${defaultTab}`);
+    } finally {
+      setLoading(false);
+    }
   }
 
   function readFile(file?: File) {
@@ -75,17 +81,41 @@ export default function CreateWorkspaceForm({
 
   const currentPlaceholder = fieldPlaceholders[fields][placeholderIndex % fieldPlaceholders[fields].length];
 
+  const previewTiles = [
+    { icon: Archive, label: "Sources", value: "OpenAlex, LoC, Met" },
+    { icon: Network, label: "Pattern bridge", value: "Graph + relations" },
+    { icon: ImageIcon, label: "Image Lab", value: image ? "Upload ready" : "Optional upload" },
+  ];
+
   return (
-    <div className="mx-auto max-w-4xl px-5 py-12">
-      <h1 className="text-4xl font-semibold text-foreground">{title}</h1>
-      <Card className="mt-6">
-        <CardContent className="p-5 space-y-4">
-          <Input
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) submit(); }}
-            placeholder={currentPlaceholder}
-          />
+    <div className="mx-auto grid min-h-[calc(100vh-65px)] w-full max-w-7xl gap-5 px-4 py-6 lg:grid-cols-[minmax(0,1fr)_380px] xl:px-6">
+      <section className="min-w-0">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-primary">ChronoLens research</p>
+            <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground md:text-5xl">{title}</h1>
+          </div>
+          <Button variant="secondary" onClick={() => setTopic(currentPlaceholder)}>
+            <Sparkles className="h-4 w-4" />
+            Use prompt
+          </Button>
+        </div>
+
+        <Card>
+          <CardContent className="space-y-4 p-4 md:p-5">
+            <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
+              <Input
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) submit(); }}
+                placeholder={currentPlaceholder}
+                className="h-12 text-base"
+              />
+              <Button className="h-12 px-5" onClick={submit} disabled={loading || !topic.trim()}>
+                <Search className="h-4 w-4" />
+                {loading ? "Creating..." : fields === "research" ? "Create Workspace" : "Generate"}
+              </Button>
+            </div>
           {fields === "study" && (
             <div className="grid gap-4 md:grid-cols-2">
               <Select defaultValue="beginner">
@@ -131,33 +161,76 @@ export default function CreateWorkspaceForm({
           )}
           {fields === "research" && (
             <>
-              <Select value={lensType} onValueChange={(v) => setLensType(v as LensType)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="artifact">Artifact / Archaeology</SelectItem>
-                  <SelectItem value="visual_art">Visual Art</SelectItem>
-                  <SelectItem value="music">Music Study</SelectItem>
-                  <SelectItem value="performance">Dance / Performance</SelectItem>
-                  <SelectItem value="architecture">Architecture</SelectItem>
-                  <SelectItem value="textile">Textile / Pattern</SelectItem>
-                  <SelectItem value="manuscript">Manuscript / Literature</SelectItem>
-                  <SelectItem value="oral_tradition">Oral Tradition</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input type="file" accept="image/*" onChange={(e) => readFile(e.target.files?.[0])} className="cursor-pointer" />
+              <div className="grid gap-3 md:grid-cols-2">
+                <Select value={lensType} onValueChange={(v) => setLensType(v as LensType)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="artifact">Artifact / Archaeology</SelectItem>
+                    <SelectItem value="visual_art">Visual Art</SelectItem>
+                    <SelectItem value="music">Music Study</SelectItem>
+                    <SelectItem value="performance">Dance / Performance</SelectItem>
+                    <SelectItem value="architecture">Architecture</SelectItem>
+                    <SelectItem value="textile">Textile / Pattern</SelectItem>
+                    <SelectItem value="manuscript">Manuscript / Literature</SelectItem>
+                    <SelectItem value="oral_tradition">Oral Tradition</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input type="file" accept="image/*" onChange={(e) => readFile(e.target.files?.[0])} className="cursor-pointer" />
+              </div>
               <Textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                rows={5}
-                placeholder="Paste text/source notes…"
+                rows={8}
+                placeholder="Paste text/source notes, catalog metadata, field observations, or research questions..."
               />
             </>
           )}
-          <Button className="w-full" onClick={submit} disabled={loading || !topic.trim()}>
-            {loading ? "Creating…" : fields === "teach" ? "Generate Lesson" : fields === "research" ? "Create Research Workspace" : "Generate Study Module"}
-          </Button>
         </CardContent>
       </Card>
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          {previewTiles.map((tile) => (
+            <Card key={tile.label} className="bg-white/80">
+              <CardContent className="p-4">
+                <tile.icon className="h-5 w-5 text-primary" />
+                <p className="mt-3 text-sm font-semibold text-foreground">{tile.label}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{tile.value}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <aside className="grid content-start gap-3">
+        <Card className="bg-[#111315] text-white">
+          <CardContent className="p-5">
+            <p className="text-sm font-medium text-[#9ee5dc]">Workspace output</p>
+            <p className="mt-3 text-2xl font-semibold leading-tight">Evidence, sources, visual regions, graphs, and timelines load into tabs.</p>
+            <p className="mt-3 text-sm leading-6 text-white/65">The workspace adapts to screen width and keeps each tool focused instead of dumping the whole report.</p>
+          </CardContent>
+        </Card>
+        {image ? (
+          <Card>
+            <CardContent className="p-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={image} alt="Uploaded preview" className="aspect-[4/3] w-full rounded-lg object-cover" />
+            </CardContent>
+          </Card>
+        ) : null}
+        <Card>
+          <CardContent className="p-5">
+            <p className="text-sm font-semibold text-foreground">What happens next</p>
+            <div className="mt-4 space-y-3 text-sm text-muted-foreground">
+              {["Search live source APIs", "Build cautious evidence cards", "Plot pattern connections", "Prepare study and teaching modules"].map((item, index) => (
+                <div key={item} className="flex gap-3">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-semibold text-primary">{index + 1}</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </aside>
     </div>
   );
 }

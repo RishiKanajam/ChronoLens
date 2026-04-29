@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import { generateLessonWithOpenAI } from "@/lib/ai/openai";
 import { fallbackLessonPack } from "@/lib/contextualFallback";
 
+function timeoutFallback(topic: string, classLevel: string, duration: string, learningGoal: string) {
+  return new Promise<ReturnType<typeof fallbackLessonPack>>((resolve) => {
+    setTimeout(() => resolve(fallbackLessonPack(topic, classLevel, duration, learningGoal)), 12000);
+  });
+}
+
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as {
@@ -15,19 +21,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Topic is required." }, { status: 400 });
     }
 
+    const classLevel = body.classLevel || "Year 9";
+    const duration = body.duration || "45 minutes";
+    const learningGoal = body.learningGoal || "source analysis";
+
     const lessonPack = process.env.OPENAI_API_KEY
-      ? await generateLessonWithOpenAI(
-          topic,
-          body.classLevel || "Year 9",
-          body.duration || "45 minutes",
-          body.learningGoal || "source analysis",
-        )
-      : fallbackLessonPack(
-          topic,
-          body.classLevel || "Year 9",
-          body.duration || "45 minutes",
-          body.learningGoal || "source analysis",
-        );
+      ? await Promise.race([
+          generateLessonWithOpenAI(topic, classLevel, duration, learningGoal),
+          timeoutFallback(topic, classLevel, duration, learningGoal),
+        ])
+      : fallbackLessonPack(topic, classLevel, duration, learningGoal);
 
     return NextResponse.json(lessonPack);
   } catch {

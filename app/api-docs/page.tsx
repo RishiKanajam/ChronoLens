@@ -8,6 +8,7 @@ const endpoints = [
   ["POST", "/api/generate-lesson", "Generate a standalone LessonPack for the Teach page."],
   ["GET", "/api/latest-discoveries", "Return recent research/source-watch items with contextual fallback."],
   ["POST", "/api/workspaces/[id]/image-analysis", "Return deterministic visual regions for Image Lab."],
+  ["POST", "/api/workspaces/[id]/analyze-region", "Analyze a user-selected image region with optional OpenAI fallback-safe interpretation."],
   ["POST", "/api/workspaces/[id]/ai-enrich", "Manually run optional OpenAI enrichment if configured."],
   ["POST", "/api/workspaces/[id]/lesson", "Regenerate a lesson pack."],
   ["POST", "/api/workspaces/[id]/study", "Regenerate a study module."],
@@ -35,27 +36,27 @@ export default function ApiDocsPage() {
   return (
     <AppFrame>
       <section className="mx-auto max-w-6xl px-5 py-12">
-        <p className="text-sm font-medium text-[#38bdf8]">Developer mode</p>
-        <h1 className="mt-3 font-serif text-5xl text-white">ChronoLens API Docs</h1>
-        <p className="mt-4 max-w-3xl text-base leading-7 text-[#a9a59b]">
+        <p className="text-sm font-medium text-primary">Developer mode</p>
+        <h1 className="mt-3 font-serif text-5xl text-foreground">ChronoLens API Docs</h1>
+        <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">
           ChronoLens uses the query you send. Without OpenAI it returns a minimal contextual workspace plus any live source-adapter results; with OpenAI it enriches the workspace once and caches it in memory.
         </p>
         <div className="mt-8 grid gap-4">
           {endpoints.map(([method, path, description]) => (
-            <article key={path} className="rounded-3xl border border-[#2a2d31] bg-[#101214] p-5">
-              <h2 className="text-xl font-semibold text-white">
-                <span className="text-[#d4a857]">{method}</span> {path}
+            <article key={path} className="rounded-xl border border-border bg-card p-5">
+              <h2 className="text-xl font-semibold text-foreground">
+                <span className="text-accent">{method}</span> {path}
               </h2>
-              <p className="mt-2 text-sm leading-6 text-[#a9a59b]">{description}</p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
             </article>
           ))}
-          <article className="rounded-3xl border border-[#2a2d31] bg-[#101214] p-5">
-            <h2 className="text-xl font-semibold text-white">Example request / response</h2>
+          <article className="rounded-xl border border-border bg-card p-5">
+            <h2 className="text-xl font-semibold text-foreground">Example request / response</h2>
             <div className="mt-4 grid gap-4 lg:grid-cols-2">
-              <pre className="overflow-auto rounded-2xl bg-[#17191c] p-4 text-xs leading-5 text-[#a9a59b]">
+              <pre className="overflow-auto rounded-lg bg-muted p-4 text-xs leading-5 text-muted-foreground">
                 {JSON.stringify(exampleRequest, null, 2)}
               </pre>
-              <pre className="overflow-auto rounded-2xl bg-[#17191c] p-4 text-xs leading-5 text-[#a9a59b]">
+              <pre className="overflow-auto rounded-lg bg-muted p-4 text-xs leading-5 text-muted-foreground">
                 {JSON.stringify(exampleResponse, null, 2)}
               </pre>
             </div>

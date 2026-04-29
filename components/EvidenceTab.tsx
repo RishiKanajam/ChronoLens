@@ -29,7 +29,7 @@ export default function EvidenceTab({ workspace }: { workspace: Workspace }) {
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-4">
-      <div className="grid gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,180px),1fr))] gap-3">
         <MetricCard label="Evidence cards" value={workspace.evidenceCards.length} />
         <MetricCard label="Needs review" value={workspace.evidenceCards.filter((c) => c.needsExpertReview).length} />
         <MetricCard label="Avg confidence" value={`${avg}%`} />
@@ -48,7 +48,7 @@ export default function EvidenceTab({ workspace }: { workspace: Workspace }) {
         ))}
       </div>
       <ScrollArea className="min-h-0 flex-1">
-        <div className="grid gap-3 pr-3 xl:grid-cols-2">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-3 pr-3">
           {cards.map((card) => (
             <EvidenceCard key={card.id} card={card} sources={workspace.sourceRecords} />
           ))}

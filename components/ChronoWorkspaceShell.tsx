@@ -12,6 +12,7 @@ import TeachTab from "@/components/TeachTab";
 import TimelineTab from "@/components/TimelineTab";
 import WorkspaceHeader from "@/components/WorkspaceHeader";
 import ImageLabTab from "@/components/ImageLabTab";
+import ArchitectureTab from "@/components/ArchitectureTab";
 import GeographyTab from "@/components/GeographyTab";
 import InfographicsTab from "@/components/InfographicsTab";
 import DiscoveriesTab from "@/components/DiscoveriesTab";
@@ -34,7 +35,7 @@ export default function ChronoWorkspaceShell({
   const router = useRouter();
   const [workspace, setWorkspace] = useState(initialWorkspace);
   const [activeTab, setActiveTab] = useState<WorkspaceTab>(
-    (["atlas", "sources", "evidence", "connections", "timeline", "geography", "image", "study", "infographics", "teach", "discoveries", "export"].includes(initialTab || "")
+    (["atlas", "sources", "evidence", "connections", "timeline", "geography", "image", "architecture", "study", "infographics", "teach", "discoveries", "export"].includes(initialTab || "")
       ? initialTab
       : "atlas") as WorkspaceTab,
   );
@@ -56,6 +57,7 @@ export default function ChronoWorkspaceShell({
     if (activeTab === "timeline") return <TimelineTab workspace={workspace} />;
     if (activeTab === "geography") return <GeographyTab workspace={workspace} />;
     if (activeTab === "image") return <ImageLabTab workspace={workspace} onWorkspaceChange={setWorkspace} />;
+    if (activeTab === "architecture") return <ArchitectureTab workspace={workspace} onWorkspaceChange={setWorkspace} />;
     if (activeTab === "study") return <StudyTab workspace={workspace} />;
     if (activeTab === "infographics") return <InfographicsTab workspace={workspace} />;
     if (activeTab === "teach") return <TeachTab workspace={workspace} onWorkspaceChange={setWorkspace} />;
@@ -135,9 +137,9 @@ export default function ChronoWorkspaceShell({
   }
 
   return (
-    <div className="h-[calc(100vh-65px)] overflow-hidden bg-[#05070a] p-0 text-vellum lg:p-3">
-      <div className="mx-auto flex h-full max-w-[1800px] overflow-hidden bg-ink shadow-soft lg:rounded-[28px] lg:ring-1 lg:ring-white/10">
-        <div className="hidden w-[460px] shrink-0 border-r border-white/8 lg:block">
+    <div className="h-[calc(100vh-65px)] overflow-hidden bg-[#e9e4d8] p-0 text-foreground lg:p-4">
+      <div className="mx-auto flex h-full max-w-[1800px] overflow-hidden bg-card shadow-soft lg:rounded-xl lg:ring-1 lg:ring-black/5">
+        <div className="hidden w-[440px] shrink-0 border-r border-border lg:block">
           <LeftChatPanel
             messages={messages}
             workspace={workspace}
@@ -150,7 +152,7 @@ export default function ChronoWorkspaceShell({
           />
         </div>
         {chatOpen ? (
-          <div className="fixed inset-0 z-50 bg-black/60 lg:hidden">
+          <div className="fixed inset-0 z-50 bg-black/25 lg:hidden">
             <div className="h-full w-[min(92vw,460px)]">
               <LeftChatPanel
                 messages={messages}
@@ -178,7 +180,7 @@ export default function ChronoWorkspaceShell({
             onTabChange={setActiveTab}
             onOpenChat={() => setChatOpen(true)}
           />
-          <main className="min-h-0 flex-1 overflow-y-auto p-6" style={{ background: "#050607" }}>
+          <main className="min-h-0 flex-1 overflow-y-auto p-4 md:p-6" style={{ background: "#f6f1e8" }}>
             {activePanel}
           </main>
         </div>

@@ -86,6 +86,18 @@ export type VisualRegion = {
   observation: string;
 };
 
+export type ArchitectureLayer = {
+  id: string;
+  name: string;
+  description: string;
+  material: string;
+  period: string;
+  function: string;
+  yPosition: number;
+  height: number;
+  color: string;
+};
+
 export type ConnectionNode = {
   id: string;
   label: string;
@@ -217,6 +229,7 @@ export type Workspace = {
   discoveries: Discovery[];
   geographyPoints?: GeographyPoint[];
   culturalFlows?: CulturalFlow[];
+  architectureLayers?: ArchitectureLayer[];
   status: {
     sourcesLoaded: number;
     evidenceCards: number;
@@ -242,6 +255,7 @@ export type WorkspaceTab =
   | "timeline"
   | "geography"
   | "image"
+  | "architecture"
   | "study"
   | "infographics"
   | "teach"

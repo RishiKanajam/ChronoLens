@@ -47,9 +47,9 @@ const config: Config = {
         serif: ["var(--font-cormorant)", "Cormorant Garamond", "serif"],
       },
       boxShadow: {
-        glow: "0 0 42px rgba(56, 189, 248, 0.16)",
-        bronze: "0 0 50px rgba(212, 168, 87, 0.14)",
-        soft: "0 18px 80px rgba(0, 0, 0, 0.28)",
+        glow: "0 14px 36px rgba(15, 118, 110, 0.1)",
+        bronze: "0 14px 32px rgba(183, 121, 31, 0.1)",
+        soft: "0 14px 42px rgba(35, 29, 20, 0.1)",
       },
     },
   },

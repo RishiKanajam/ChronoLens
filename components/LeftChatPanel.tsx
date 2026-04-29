@@ -21,7 +21,7 @@ export default function LeftChatPanel({
   loading?: boolean;
 }) {
   return (
-    <aside className="flex h-full flex-col p-4 gap-3" style={{ background: "#0a0b0e" }}>
+    <aside className="flex h-full flex-col gap-3 bg-[#fffaf1] p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="font-serif text-2xl text-foreground">ChronoLens</h2>
@@ -31,11 +31,11 @@ export default function LeftChatPanel({
           <Plus className="h-3.5 w-3.5" />New Query
         </Button>
       </div>
-      <p className="text-xs leading-5 text-muted-foreground rounded-xl border border-border p-3">
+      <p className="rounded-lg border border-border bg-white p-3 text-xs leading-5 text-muted-foreground">
         Ask about artifacts, art, music, performance, history, manuscripts, architecture, textiles, or cultural patterns.
       </p>
       <ReadAloudButton text={readAloudText} />
-      <ScrollArea className="min-h-0 flex-1">
+      <ScrollArea className="min-h-0 flex-1 rounded-lg border border-border bg-[#f7f1e7] p-3">
         <div className="space-y-3 pr-2">
           {messages.map((message) => (
             <div key={message.id} className="space-y-2">
