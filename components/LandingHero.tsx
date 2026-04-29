@@ -36,6 +36,7 @@ export default function LandingHero() {
         body: JSON.stringify({ query: nextQuery, mode: "student", lensType: "topic" }),
       });
       const workspace = (await response.json()) as { id: string };
+      sessionStorage.setItem(`workspace-${workspace.id}`, JSON.stringify(workspace));
       router.push(`/workspace/${workspace.id}`);
     } finally {
       setLoading(false);

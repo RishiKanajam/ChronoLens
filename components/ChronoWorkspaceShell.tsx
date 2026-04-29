@@ -87,6 +87,7 @@ export default function ChronoWorkspaceShell({
 
       if (!response.ok) throw new Error("Workspace creation failed");
       const nextWorkspace = (await response.json()) as Workspace;
+      sessionStorage.setItem(`workspace-${nextWorkspace.id}`, JSON.stringify(nextWorkspace));
       setWorkspace(nextWorkspace);
       setActiveTab("atlas");
       setChatOpen(false);
